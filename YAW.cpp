@@ -7,6 +7,9 @@
 #include <time.h>
 #include "I2Cdev.h"
 #include "MPU6050_6Axis_MotionApps20.h"
+#include <sys/file.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
 
 // class default I2C address is 0x68
@@ -51,6 +54,9 @@ MPU6050 mpu;
 //#define OUTPUT_TEAPOT
 
 FILE *f;
+char myfifo[] = "/run/shm/tempo";
+char s[10];
+int fd,i;
 
 // MPU control/status vars
 bool dmpReady = false;  // set true if DMP init was successful
@@ -185,11 +191,15 @@ void loop() {
 				}
 			}*/
 			T = clock();
-			//f = fopen("yaw.txt","w");
-			f = fopen("/run/shm/yaw.txt","w");
-			fprintf(f,"%d",(int)(ypr[0] * 57.3));
-			//fprintf(f,"%c",'r');
-			fclose(f);
+			//f = fopen("/run/shm/yaw.txt","w");
+			//int result = flock(fileno(f),LOCK_EX);
+			//fprintf(f,"%d",(int)(ypr[0] * 57.3));
+			//result = flock(fileno(f),LOCK_UN);
+			//fclose(f);
+			sprintf(s,"%d",(int)(ypr[0] * 57.3));
+			fd = open(myfifo,O_WRONLY); //opening the pipe whose name is myfifo and which is saved at "/tmp/myfifo" (agreed upon by two parties)
+			write(fd,s,sizeof(s)); //writing the message through the pipe
+			close(fd);
 			T = clock() - T;
 			printf("\ttime taken %f \n",((float)T)/CLOCKS_PER_SEC);
 			/*f = fopen("yaw.bin","wb");
