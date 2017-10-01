@@ -10,8 +10,9 @@ pin = 24
 oldTime = 0
 oldTimeWrite = 0
 rpm = 0
-#path = "/run/shm/tempo2"
-path = "/tmp/tempo2"
+#path = "/run/shm/rpm"
+path = "/tmp/rpm2"
+#path = "/home/pi/hiMan/MPU6050-Pi-Demo/temp2"
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(pin,GPIO.IN)
 
@@ -37,7 +38,7 @@ while True:
 		#print rpm
 		oldTimeWrite = tWrite
 		#print "opening the can"
-		f = open(path,'w',0)
+		f = open(path,'w',os.O_WRONLY | os.O_NONBLOCK)
 		f.write(str(int(rpm)))
 		f.flush()
 		f.close()

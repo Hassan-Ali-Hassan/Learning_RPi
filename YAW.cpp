@@ -54,7 +54,7 @@ MPU6050 mpu;
 //#define OUTPUT_TEAPOT
 
 FILE *f;
-char myfifo[] = "/run/shm/tempo";
+char myfifo[] = /*"/home/pi/hiMan/MPU6050-Pi-Demo/temp1";*/"/tmp/yaw";
 char s[10];
 int fd,i;
 
@@ -197,7 +197,7 @@ void loop() {
 			//result = flock(fileno(f),LOCK_UN);
 			//fclose(f);
 			sprintf(s,"%d",(int)(ypr[0] * 57.3));
-			fd = open(myfifo,O_WRONLY); //opening the pipe whose name is myfifo and which is saved at "/tmp/myfifo" (agreed upon by two parties)
+			fd = open(myfifo,O_WRONLY|O_NONBLOCK); //opening the pipe whose name is myfifo and which is saved at "/tmp/myfifo" (agreed upon by two parties)
 			write(fd,s,sizeof(s)); //writing the message through the pipe
 			close(fd);
 			T = clock() - T;
